@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+  <head>
+    <title>Client Cancel Page</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    var email = /*[[${email}]]*/ 'test@email.com';
+    
+      $(function () {
+        $("#cancelBtn").click(function () {
+          var areYouSure = confirm("Are you sure you wish to cancel");
+          
+          if (areYouSure)
+          {
+            $.post("/cancel", {"email" : email});
+          };
+        });
+      });
+    /*]]>*/
+    </script>
+  </head>
+  <body>
+    <h2>Membership Cancellation</h2>
+    
+    <p>To cancel your monthly subscription, click below.</p>
+    
+    <button id="cancelBtn">Cancel</button>
+  </body>
+</html>

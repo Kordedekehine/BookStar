@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://thymeleaf.org">
+
+<head>
+    <title>Client Payment Page for Features</title>
+</head>
+<body>
+<h1> To Complete Your Feature Booking, please make online payment!</h1>
+
+<form action ="" method = "POST">
+    <script
+            src = "https://checkout.stripe.com/checkout.js" class = "stripe-button"
+            data-key = "pk_test_51M0RttLgcmCoDSKxorNoTD2HYb7xk0kIktndoDbtsfoaFs21XiHriZEvaIBekF84lYlQmOUz0negumR0bye1tTre00BFsYMfu8"
+            data-amount = "30000"
+            data-name = "Payment for Feature"
+            data-description = "Refundable payment"
+            data-image = "https://stripe.com/img/documentation/checkout/marketplace.png"
+            data-locale = "auto"
+            data-currency= "usd"
+            th:attr = "data-email = ${client.email}">
+    </script>
+</form>
+</body>
+</html>
