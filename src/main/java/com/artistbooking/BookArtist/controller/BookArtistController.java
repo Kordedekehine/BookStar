@@ -1,4 +1,4 @@
-package com.artistbooking.BookArtist.controller.bookingController;
+package com.artistbooking.BookArtist.controller;
 
 import com.artistbooking.BookArtist.emailService.EmailService;
 import com.artistbooking.BookArtist.model.Client;
@@ -9,7 +9,6 @@ import com.stripe.model.Charge;
 import com.stripe.model.Customer;
 import com.stripe.model.Plan;
 import com.stripe.model.Subscription;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,10 +18,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.mail.MessagingException;
 import java.util.*;
 
 @Controller
-public class BookArtist {
+public class BookArtistController {
 
     private static final String SERVICE_MONTHLY_PLAN = "service-monthly-plan";
 

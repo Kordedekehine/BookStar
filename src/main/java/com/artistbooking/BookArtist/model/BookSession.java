@@ -1,11 +1,14 @@
 package com.artistbooking.BookArtist.model;
 
-import jakarta.persistence.*;
+
+
+
+import javax.persistence.*;
 
 @Entity
 public class BookSession {
 
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 

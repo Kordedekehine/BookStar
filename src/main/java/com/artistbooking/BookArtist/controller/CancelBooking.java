@@ -1,4 +1,4 @@
-package com.artistbooking.BookArtist.controller.bookingController;
+package com.artistbooking.BookArtist.controller;
 
 import com.artistbooking.BookArtist.model.Client;
 import com.artistbooking.BookArtist.repository.ClientRepository;

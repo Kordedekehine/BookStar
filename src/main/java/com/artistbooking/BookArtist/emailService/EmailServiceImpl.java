@@ -2,10 +2,11 @@ package com.artistbooking.BookArtist.emailService;
 
 
 import com.artistbooking.BookArtist.model.Client;
-import jakarta.mail.MessagingException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+
+import javax.mail.MessagingException;
 
 
 @Service

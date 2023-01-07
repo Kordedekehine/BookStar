@@ -2,7 +2,9 @@ package com.artistbooking.BookArtist.emailService;
 
 
 import com.artistbooking.BookArtist.model.Client;
-import jakarta.mail.MessagingException;
+
+import javax.mail.MessagingException;
+
 
 public interface EmailService {
 
