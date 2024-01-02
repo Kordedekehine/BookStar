@@ -4,13 +4,8 @@ import com.artistbooking.BookArtist.dPayload.request.ManagerLoginDto;
 import com.artistbooking.BookArtist.dPayload.request.ManagerRequestDto;
 import com.artistbooking.BookArtist.dPayload.request.UpdatePasswordRequestDto;
 import com.artistbooking.BookArtist.dPayload.response.ManagerResponseDto;
-import com.artistbooking.BookArtist.enums.Role;
-import com.artistbooking.BookArtist.exception.IncorrectPasswordException;
-import com.artistbooking.BookArtist.exception.PasswordMismatchException;
-import com.artistbooking.BookArtist.exception.ResourceFoundException;
-import com.artistbooking.BookArtist.exception.ResourceNotFoundException;
+import com.artistbooking.BookArtist.exception.*;
 import com.artistbooking.BookArtist.model.Manager;
-import com.artistbooking.BookArtist.model.UserEntity;
 import com.artistbooking.BookArtist.repository.ManagerRepository;
 import com.artistbooking.BookArtist.service.ManagerService;
 import org.modelmapper.ModelMapper;
@@ -40,19 +35,19 @@ public class ManagerServiceImpl implements ManagerService {
 
 
     @Override
-    public ManagerResponseDto createManager(ManagerRequestDto managerRequestDto) throws ResourceFoundException, PasswordMismatchException {
+    public ManagerResponseDto createManager(ManagerRequestDto managerRequestDto) throws ResourceFoundException, PasswordMismatchException, ManagerNotFoundException {
 
         Optional<Manager> optionalManager = managerRepository.findByEmail(managerRequestDto.getEmail());
         if (optionalManager.isPresent())
         {
             //LOOK VERY WELL--already exists
-            throw new ResourceFoundException();
+            throw new ManagerNotFoundException();
         }
 
         Optional<Manager> optionalUsername = managerRepository.findByName(managerRequestDto.getName());
         if (optionalUsername.isPresent())
         {
-            throw new ResourceFoundException();
+            throw new ManagerNotFoundException();
         }
 
         if (!managerRequestDto.getPassword().equals(managerRequestDto.getConfirmPassword())){
@@ -65,7 +60,8 @@ public class ManagerServiceImpl implements ManagerService {
         manager.setAddress(managerRequestDto.getAddress());
         manager.setPassword(passwordEncoder.encode(managerRequestDto.getPassword()));
         manager.setCreatedOn(LocalDateTime.now());
-        manager.setRole(Role.USER);
+        manager.setCreatedOn(LocalDateTime.now());
+
 
 
         managerRepository.save(manager);
@@ -80,12 +76,12 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public ManagerResponseDto login(ManagerLoginDto managerLoginDto, HttpServletRequest request) throws ResourceNotFoundException, IncorrectPasswordException {
+    public ManagerResponseDto login(ManagerLoginDto managerLoginDto, HttpServletRequest request) throws NotFoundException, IncorrectPasswordException, ManagerNotFoundException {
 
         Optional<Manager> optionalManager = managerRepository.findByEmail(managerLoginDto.getEmail());
         if (optionalManager.isEmpty())
         {
-            throw new ResourceNotFoundException();
+            throw new ManagerNotFoundException();
         }
 
         Manager manager = optionalManager.get();
@@ -105,17 +101,17 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) throws ResourceNotFoundException, IncorrectPasswordException, PasswordMismatchException {
+    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) throws NotFoundException, IncorrectPasswordException, PasswordMismatchException, RestrictedToManagerException, ManagerNotFoundException {
 
-        Long userid = (Long) session.getAttribute("userid");
-        if (userid == null) {
-            throw new ResourceNotFoundException();
+        Long managerid = (Long) session.getAttribute("managerid");
+        if (managerid == null) {
+            throw new RestrictedToManagerException();
         }
 
-        Optional<Manager> optionalManager = managerRepository.findById(userid);
+        Optional<Manager> optionalManager = managerRepository.findById(managerid);
         if (optionalManager.isEmpty())
         {
-            throw new ResourceNotFoundException();
+            throw new ManagerNotFoundException();
         }
 
         Manager manager = optionalManager.get();
@@ -128,11 +124,32 @@ public class ManagerServiceImpl implements ManagerService {
             throw new PasswordMismatchException();
         }
 
+        manager.setUpdatedOn(LocalDateTime.now());
         manager.setPassword(passwordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
         managerRepository.save(manager);
 
         return "Password Updated!";
     }
 
+    @Override
+    public boolean isManager(Long managerId) {
 
+        if (managerId != null) {
+
+            Optional<Manager> optionalAdmin = managerRepository.findById(managerId);
+            return optionalAdmin.isPresent();
+        }
+
+
+        Long loggedInManagerId = (Long) session.getAttribute("managerid");
+
+
+        if (loggedInManagerId != null) {
+
+            Optional<Manager> optionalManager = managerRepository.findById(loggedInManagerId);
+            return optionalManager.isPresent();
+        }
+
+        return false;
+    }
 }

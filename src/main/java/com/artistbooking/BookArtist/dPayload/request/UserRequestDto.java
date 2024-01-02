@@ -1,10 +1,7 @@
 package com.artistbooking.BookArtist.dPayload.request;
 
 
-import com.artistbooking.BookArtist.enums.Role;
 import lombok.*;
-
-import javax.persistence.Entity;
 
 
 @Getter
@@ -18,7 +15,6 @@ public class UserRequestDto {
     private String email;
     private String confirmPassword;
     private String address;
-    private Role role;
     private String password;
 
 }

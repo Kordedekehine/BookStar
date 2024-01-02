@@ -1,6 +1,7 @@
 package com.artistbooking.BookArtist.model;
 
 import com.artistbooking.BookArtist.enums.PricingPlanType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -22,8 +23,11 @@ public class PaymentPaystack {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_entity_id")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @Column(name = "payment_verification_id")
+    private String paymentVerification;
 
     @Column(name = "reference")
     private String reference;
@@ -53,6 +57,7 @@ public class PaymentPaystack {
     @Enumerated(EnumType.STRING)
     private PricingPlanType pricingPlanType = PricingPlanType.BASIC;
 
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_on", updatable = false, nullable = false)

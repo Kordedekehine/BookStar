@@ -6,6 +6,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -75,12 +76,11 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
-    @ExceptionHandler(ResourceNotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     public @ResponseBody
-    ExceptionResponse handleResourceNotFoundException(
+    ExceptionResponse handleNotFoundException(
             Exception ex) {
-        return new ExceptionResponse(List.of("Resource not found! Seems the thing you looking for" +
-                "does not exist :)"));
+        return new ExceptionResponse(List.of("The Data cannot be found"));
     }
 
 
@@ -92,4 +92,45 @@ public class GlobalControllerExceptionHandler {
         return new ExceptionResponse(List.of("This resource is already taken. Please specify " +
                 "another one!"));
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
+    @ExceptionHandler(RestrictedToManagerException.class)
+    public @ResponseBody
+    ExceptionResponse handleRestrictedToManagerException(
+            Exception ex) {
+        return new ExceptionResponse(List.of("Only one with manager role has right to access " +
+                "this resource"));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // 400
+    @ExceptionHandler(RestrictedAccessException.class)
+    public @ResponseBody
+    ExceptionResponse handleRestrictedAccessException(
+            Exception ex) {
+        return new ExceptionResponse(List.of("Only one with user role has right to access " +
+                "this resource"));
+    }
+
+
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleException(Exception e) {
+        // Handle the exception
+        return new ResponseEntity<>("An error occurred: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ManagerNotFoundException.class)
+    public ExceptionResponse handleManagerNotFoundException(Exception e) {
+        // Handle the exception
+        return new ExceptionResponse(List.of("Manager identity not found"));
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(UserNotFoundException.class)
+    public ExceptionResponse handleUserNotFoundException(Exception e) {
+        // Handle the exception
+        return new ExceptionResponse(List.of("User identity not found"));
+    }
+
 }

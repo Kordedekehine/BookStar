@@ -1,12 +1,11 @@
 package com.artistbooking.BookArtist.model;
 
-import com.artistbooking.BookArtist.enums.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -33,13 +32,15 @@ public class UserEntity {
     @Column(name = "address", nullable = false)
     private String address;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @CreationTimestamp
-    @Column(name = "created_on", updatable = false, nullable = false)
+    @Column(name = "created_on",  nullable = false)
     private LocalDateTime createdOn;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @CreationTimestamp
+    @Column(name = "updated_on", nullable = false)
+    private LocalDateTime updatedOn;
 
     @Column(nullable = false)
     private String email;

@@ -5,11 +5,7 @@ import com.artistbooking.BookArtist.dPayload.request.UpdatePasswordRequestDto;
 import com.artistbooking.BookArtist.dPayload.request.UserLoginDto;
 import com.artistbooking.BookArtist.dPayload.request.UserRequestDto;
 import com.artistbooking.BookArtist.dPayload.response.UserResponseDto;
-import com.artistbooking.BookArtist.enums.Role;
-import com.artistbooking.BookArtist.exception.IncorrectPasswordException;
-import com.artistbooking.BookArtist.exception.PasswordMismatchException;
-import com.artistbooking.BookArtist.exception.ResourceFoundException;
-import com.artistbooking.BookArtist.exception.ResourceNotFoundException;
+import com.artistbooking.BookArtist.exception.*;
 import com.artistbooking.BookArtist.model.UserEntity;
 import com.artistbooking.BookArtist.repository.UserRepository;
 import com.artistbooking.BookArtist.service.UserService;
@@ -38,13 +34,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Override
-    public UserResponseDto createUser(UserRequestDto userRequestDto) throws ResourceFoundException, PasswordMismatchException {
+    public UserResponseDto createUser(UserRequestDto userRequestDto) throws ResourceFoundException, PasswordMismatchException, UserNotFoundException {
 
         Optional<UserEntity> optionalUser = userRepository.findByEmail(userRequestDto.getEmail());
         if (optionalUser.isPresent())
         {
             //LOOK VERY WELL--already exists
-            throw new ResourceFoundException();
+            throw new UserNotFoundException();
         }
 
         Optional<UserEntity> optionalUsername = userRepository.findByName(userRequestDto.getName());
@@ -63,7 +59,7 @@ public class UserServiceImpl implements UserService {
         user.setAddress(userRequestDto.getAddress());
         user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         user.setCreatedOn(LocalDateTime.now());
-        user.setRole(Role.USER);
+        user.setUpdatedOn(LocalDateTime.now());
 
 
         userRepository.save(user);
@@ -79,12 +75,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto login(UserLoginDto userLoginDto, HttpServletRequest request) throws ResourceNotFoundException, IncorrectPasswordException {
+    public UserResponseDto login(UserLoginDto userLoginDto, HttpServletRequest request) throws NotFoundException, IncorrectPasswordException, UserNotFoundException {
 
         Optional<UserEntity> optionalUser = userRepository.findByEmail(userLoginDto.getEmail());
         if (optionalUser.isEmpty())
         {
-            throw new ResourceNotFoundException();
+            throw new UserNotFoundException();
         }
 
         UserEntity user = optionalUser.get();
@@ -104,17 +100,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) throws ResourceNotFoundException, IncorrectPasswordException, PasswordMismatchException {
+    public String updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto) throws NotFoundException, IncorrectPasswordException, PasswordMismatchException, RestrictedAccessException, UserNotFoundException {
 
         Long userid = (Long) session.getAttribute("userid");
         if (userid == null) {
-            throw new ResourceNotFoundException();
+            throw new RestrictedAccessException();
         }
 
         Optional<UserEntity> optionalUser = userRepository.findById(userid);
         if (optionalUser.isEmpty())
         {
-            throw new ResourceNotFoundException();
+            throw new UserNotFoundException();
         }
 
         UserEntity user = optionalUser.get();
@@ -127,6 +123,7 @@ public class UserServiceImpl implements UserService {
             throw new PasswordMismatchException();
         }
 
+        user.setUpdatedOn(LocalDateTime.now());
         user.setPassword(passwordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
         userRepository.save(user);
 

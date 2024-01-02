@@ -18,7 +18,7 @@ public class Likes {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_entity_id")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
     @ManyToOne(fetch =  FetchType.LAZY)
@@ -26,6 +26,6 @@ public class Likes {
     private Comment comment;
 
     @ManyToOne(fetch =  FetchType.LAZY)
-    @JoinColumn(name = "post_life_style_id")
-    private PostLifeStyle post;
+    @JoinColumn(name = "post_id")
+    private Post post;
 }

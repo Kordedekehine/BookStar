@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-@Entity
+@Embeddable
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,9 +15,6 @@ import java.util.Set;
 @Builder
 public class Handles {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
 
     private String instagramHandle;
 
@@ -31,6 +28,4 @@ public class Handles {
 
     private String faceBookHandle;
 
-    @ManyToMany(mappedBy = "handles")
-    private Set<Artiste> artistes = new HashSet<>();
 }

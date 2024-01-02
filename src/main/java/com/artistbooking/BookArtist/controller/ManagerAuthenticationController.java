@@ -1,12 +1,8 @@
 package com.artistbooking.BookArtist.controller;
 
 import com.artistbooking.BookArtist.dPayload.request.*;
-import com.artistbooking.BookArtist.exception.IncorrectPasswordException;
-import com.artistbooking.BookArtist.exception.PasswordMismatchException;
-import com.artistbooking.BookArtist.exception.ResourceFoundException;
-import com.artistbooking.BookArtist.exception.ResourceNotFoundException;
+import com.artistbooking.BookArtist.exception.*;
 import com.artistbooking.BookArtist.service.ManagerService;
-import com.artistbooking.BookArtist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,19 +25,19 @@ public class ManagerAuthenticationController {
 
 
     @PostMapping(path = "/signUp")
-    public ResponseEntity<?> registerAdmin(@RequestBody @Valid ManagerRequestDto managerRequestDto) throws ResourceFoundException, PasswordMismatchException {
+    public ResponseEntity<?> registerAdmin(@RequestBody @Valid ManagerRequestDto managerRequestDto) throws ResourceFoundException, PasswordMismatchException, ManagerNotFoundException {
 
         return new ResponseEntity<>(managerService.createManager(managerRequestDto), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<?> login(@RequestBody @Valid ManagerLoginDto managerLoginDto, HttpServletRequest request) throws ResourceFoundException, PasswordMismatchException, IncorrectPasswordException, ResourceNotFoundException {
+    public ResponseEntity<?> login(@RequestBody @Valid ManagerLoginDto managerLoginDto, HttpServletRequest request) throws ResourceFoundException, PasswordMismatchException, IncorrectPasswordException, NotFoundException, ManagerNotFoundException {
 
         return new ResponseEntity<>(managerService.login(managerLoginDto,request),HttpStatus.OK);
     }
 
     @PutMapping(path = "/edit")
-    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto) throws PasswordMismatchException, IncorrectPasswordException, ResourceNotFoundException {
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto) throws PasswordMismatchException, IncorrectPasswordException, NotFoundException, RestrictedToManagerException, ManagerNotFoundException {
 
         return new ResponseEntity<>(managerService.updatePassword(updatePasswordRequestDto),HttpStatus.ACCEPTED);
 
