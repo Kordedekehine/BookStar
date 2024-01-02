@@ -61,14 +61,6 @@ public class PaystackServiceImpl implements PaystackService {
     @Value("${paystack.secret.key}")
     private String paystackSecretKey;
 
-    /**
-     * THE CREATE PLAN IS ACTUALLY A LATE ADDITION BECAUSE I DON'T SEE IT AS A NECESSITY FOR THE APP BUT THE TRUTH
-     * IS SOME CLUB AND BARS HAVE THIS FAVORITE UPCOMING ARTISTES THEY DO INVITE WEEKLY AND THEY END UP PAYING THEM
-     * MONTHLY...SOMEONE HAD TO EXPLAIN THIS TO ME LOL
-     * @param createPlanDto
-     * @return
-     * @throws Exception
-     */
 
     @Override
     public CreatePlanResponse createPlan(CreatePlanDto createPlanDto) throws Exception {
