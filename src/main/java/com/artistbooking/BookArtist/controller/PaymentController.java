@@ -1,7 +1,6 @@
 package com.artistbooking.BookArtist.controller;
 
 
-import com.artistbooking.BookArtist.dPayload.request.CreatePlanDto;
 import com.artistbooking.BookArtist.dPayload.request.InitializePaymentDto;
 import com.artistbooking.BookArtist.service.PaystackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +17,6 @@ public class PaymentController {
     @Autowired
     private PaystackService paystackService;
 
-    @PostMapping(path = "/createPaymentPlan")
-    public ResponseEntity<?> createPaymentPlan(@RequestBody @Valid CreatePlanDto createPlanDto) throws Exception {
-
-        return new ResponseEntity<>(paystackService.createPlan(createPlanDto), HttpStatus.CREATED);
-    }
 
     @PostMapping(path = "/initializePayment")
     public ResponseEntity<?> initializePayment(@RequestBody @Valid InitializePaymentDto initializePaymentDto) throws Exception {

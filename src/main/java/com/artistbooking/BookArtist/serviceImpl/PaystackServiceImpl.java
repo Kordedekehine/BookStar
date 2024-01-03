@@ -1,9 +1,7 @@
 package com.artistbooking.BookArtist.serviceImpl;
 
-import com.artistbooking.BookArtist.dPayload.request.CreatePlanDto;
 import com.artistbooking.BookArtist.dPayload.request.InitializePaymentDto;
 import com.artistbooking.BookArtist.dPayload.request.PaymentVerificationDto;
-import com.artistbooking.BookArtist.dPayload.response.CreatePlanResponse;
 import com.artistbooking.BookArtist.dPayload.response.InitializePaymentResponse;
 import com.artistbooking.BookArtist.dPayload.response.PaymentVerificationResponse;
 import com.artistbooking.BookArtist.enums.PricingPlanType;
@@ -34,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
@@ -60,50 +57,6 @@ public class PaystackServiceImpl implements PaystackService {
 
     @Value("${paystack.secret.key}")
     private String paystackSecretKey;
-
-
-    @Override
-    public CreatePlanResponse createPlan(CreatePlanDto createPlanDto) throws Exception {
-        CreatePlanResponse createPlanResponse = null;
-
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            Gson gson = new Gson();
-            StringEntity postingString = new StringEntity(gson.toJson(createPlanDto));
-
-            HttpUriRequest request = RequestBuilder
-                    .post(PAYSTACK_INIT)
-                    .setEntity(postingString)
-                    .addHeader("Content-type", "application/json")
-                    .addHeader("Authorization", "Bearer " + paystackSecretKey)
-                    .build();
-
-            StringBuilder result = new StringBuilder();
-
-            try (CloseableHttpResponse response = client.execute(request)) {
-                int statusCode = response.getStatusLine().getStatusCode();
-
-                if (statusCode == STATUS_CODE_CREATED) {
-                    try (BufferedReader rd = new BufferedReader(
-                            new InputStreamReader(response.getEntity().getContent()))) {
-                        String line;
-                        while ((line = rd.readLine()) != null) {
-                            result.append(line);
-                        }
-                    }
-                    ObjectMapper mapper = new ObjectMapper();
-                    createPlanResponse = mapper.readValue(result.toString(), CreatePlanResponse.class);
-                } else {
-                    log.error("Error creating Paystack plan. Status Code: {}", statusCode);
-                    throw new Exception("Paystack is unable to process payment at the moment or something wrong with the request");
-                }
-            }
-        } catch (IOException e) {
-            log.error("IOException while creating Paystack plan: {}", e.getMessage(), e);
-            throw new Exception("Error processing Paystack request", e);
-        }
-
-        return createPlanResponse;
-    }
 
 
     @Override
