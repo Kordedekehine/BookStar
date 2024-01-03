@@ -5,10 +5,7 @@ import com.artistbooking.BookArtist.dPayload.request.OptionDto;
 import com.artistbooking.BookArtist.dPayload.request.PollDto;
 import com.artistbooking.BookArtist.exception.*;
 import com.artistbooking.BookArtist.model.*;
-import com.artistbooking.BookArtist.repository.ManagerRepository;
-import com.artistbooking.BookArtist.repository.OptionRepository;
-import com.artistbooking.BookArtist.repository.PollRepository;
-import com.artistbooking.BookArtist.repository.UserRepository;
+import com.artistbooking.BookArtist.repository.*;
 import com.artistbooking.BookArtist.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +34,9 @@ public class PollServiceImpl implements PollService {
 
    @Autowired
     private UserRepository userRepository;
+
+   @Autowired
+   private VoteRepository voteRepository;
 
     @Override
     public List<PollDto> getAllPolls() throws NotFoundException, ManagerNotFoundException, UserNotFoundException {
@@ -152,7 +152,7 @@ public class PollServiceImpl implements PollService {
         }
 
         UserEntity user = optionalUser.get();
-        //TODO CHECK IF THE USER HAS VOTED BEFORE TO AVOID DOUBLE VOTING
+
 
         Optional<Poll> optionalPoll = pollRepository.findById(pollId);
         Optional<Option> optionalOption = optionRepository.findById(optionId);
@@ -174,8 +174,28 @@ public class PollServiceImpl implements PollService {
             // Save the updated poll
             pollRepository.save(poll);
 
+         // Record the user's vote to prevent double voting
+         recordUserVote(user, poll.getId());
+
+         //fixed
+
         return "Successfully Voted!!";
     }
+
+    private boolean hasUserVoted(UserEntity user, Long pollId) {
+        return voteRepository.existsByUserIdAndPollId(user.getId(), pollId);
+    }
+
+    private void recordUserVote(UserEntity user, Long pollId) throws GeneralServiceException {
+        if (hasUserVoted(user, pollId)) {
+         throw new GeneralServiceException("User already voted");
+        }
+            Vote userVote = new Vote();
+            userVote.setUser(user);
+            userVote.setPollId(pollId);
+            voteRepository.save(userVote);
+        }
+
 
 
     @Override
@@ -267,5 +287,60 @@ public class PollServiceImpl implements PollService {
         pollRepository.delete(poll);
 
         return "Poll Deleted!";
+    }
+
+
+
+    @Transactional
+    @Override
+    public String unvote(Long pollId) throws RestrictedAccessException, UserNotFoundException, GeneralServiceException {
+
+        Long userId = (Long) session.getAttribute("userid");
+        System.out.println("userId: " + userId);
+        if (userId == null) {
+            throw new RestrictedAccessException();
+        }
+
+        Optional<UserEntity> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        UserEntity user = optionalUser.get();
+
+        Optional<Vote> userVote = voteRepository.findByUserIdAndPollId(user.getId(), pollId);
+        if (userVote.isEmpty()) {
+            throw new GeneralServiceException("User has not voted in this poll");
+        }
+
+        voteRepository.delete(userVote.get());
+
+        Optional<Poll> optionalPoll = pollRepository.findById(pollId);
+        if (optionalPoll.isEmpty()) {
+            throw new GeneralServiceException("The poll cannot be retrieved");
+        }
+
+        Poll poll = optionalPoll.get();
+
+        // Find the option the user voted for
+        Optional<Option> votedOption = findVotedOption(userVote.get(), poll.getOptions());
+
+        if (votedOption.isPresent()) {
+            votedOption.get().setVoteCount(votedOption.get().getVoteCount() - 1);
+            optionRepository.save(votedOption.get());
+
+            poll.getOptions().remove(votedOption.get()); //safe fail
+
+            // Save the updated poll
+            pollRepository.save(poll);
+        }
+
+        return "Successfully Unvoted!!";
+    }
+
+    private Optional<Option> findVotedOption(Vote vote, List<Option> options) {
+        return options.stream()
+                .filter(option -> option.getId().equals(vote.getId()))
+                .findFirst();
     }
 }

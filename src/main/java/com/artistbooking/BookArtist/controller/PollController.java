@@ -31,6 +31,12 @@ public class PollController {
         return new ResponseEntity<>(pollService.vote(pollId,optionId), HttpStatus.ACCEPTED);
     }
 
+    @DeleteMapping(path = "unvote/{pollId}")
+    public ResponseEntity<?> vote(@PathVariable Long pollId) throws NotFoundException, RestrictedToManagerException, GeneralServiceException, RestrictedAccessException, UserNotFoundException {
+
+        return new ResponseEntity<>(pollService.unvote(pollId), HttpStatus.ACCEPTED);
+    }
+
 
     @GetMapping(path = "/getAllPoll")
     public ResponseEntity<?> getAllPolls() throws NotFoundException, RestrictedToManagerException, GeneralServiceException, RestrictedAccessException, UserNotFoundException, ManagerNotFoundException {

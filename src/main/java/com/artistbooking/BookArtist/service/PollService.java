@@ -13,6 +13,7 @@ public interface PollService {
 
     String vote(Long pollId, Long optionId) throws RestrictedAccessException, NotFoundException, GeneralServiceException, UserNotFoundException;
 
+    String unvote(Long pollId) throws RestrictedAccessException, UserNotFoundException, GeneralServiceException;
     PollDto getPollById(Long pollId) throws NotFoundException;
 
     PollDto updatePoll(Long pollId, PollDto pollDto) throws NotFoundException, RestrictedToManagerException, ManagerNotFoundException;
