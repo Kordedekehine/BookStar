@@ -100,8 +100,11 @@ public class PollServiceImpl implements PollService {
             throw new GeneralServiceException("\"Poll must have at least one option");
         }
 
-        //TODO A BUG THAT NEEDS TO BE FIXED RIGHT HERE AS THE OPTIONS ALLOW NULL VALUE
-        //TODO MIGHT FIX IT OR MIGHT JUST ALLOW THE FRONTENDS TO PUT A NON NULL VALUE ON IT
+        if (optionDtos.size() < 2) {
+            throw new GeneralServiceException("\"Poll must have at least three options");
+        }
+
+
             // Convert PollDTO to Poll entity
             Poll poll = new Poll();
             poll.setQuestion(pollDto.getQuestion());
