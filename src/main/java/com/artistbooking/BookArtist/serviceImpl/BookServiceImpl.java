@@ -122,9 +122,6 @@ public class BookServiceImpl implements BookService {
                  .build();
      }
 
-
-
-
     private boolean hasBookedOnSameDate(UserEntity user, LocalDate bookingDate) {
         return bookingRepository.existsByUserAndBookingDate(user, bookingDate);
     }

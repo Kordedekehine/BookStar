@@ -80,7 +80,6 @@ public class PollServiceImpl implements PollService {
     }
 
 
-
     @Transactional
     @Override
     public PollDto createPoll(PollDto pollDto) throws GeneralServiceException, NotFoundException, RestrictedToManagerException, ManagerNotFoundException {
