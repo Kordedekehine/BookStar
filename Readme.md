@@ -67,7 +67,7 @@ The Poll is specifically to get Fans opinions on show dates, ticket price, venue
 
 To design the Management Assistant system, the following design patterns can be considered:
 
-Factory Pattern: The Factory pattern can be used to create instances of users which includes the manager and the users. It allows for flexible object creation without specifying the exact class of the object that will be created.
+Factory and Builder Pattern: The Factory pattern can be used to create instances of users which includes the manager and the users. It allows for flexible object creation without specifying the exact class of the object that will be created.
 
 Observer Pattern: The Observer pattern can be used to implement tracking and monitoring functionality. The artiste location and the schedules, such as users or administrators, who can receive updates about the current state of the artistes and bookings.
 
